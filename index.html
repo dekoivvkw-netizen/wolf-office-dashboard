@@ -3,18 +3,175 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Wolf Office Dashboard</title>
+<title>Wolf Office • IMPERO Live</title>
 <style>
-body{margin:0;background:#08080a;color:#f6f5f1;font-family:system-ui;display:grid;place-items:center;min-height:100vh;text-align:center}
-a{color:#f2c94c;font-weight:bold}
+:root{--bg:#08080a;--surface:#121214;--surface-2:#1a1a1e;--line:#2a2a2e;--gold:#f2c94c;--gold-dim:rgba(242,201,76,.15);--gold-border:rgba(242,201,76,.35);--green:#1aff8c;--green-dim:rgba(26,255,140,.15);--text:#f6f5f1;--text-dim:#9a9994;--red:#ff4d6a}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;min-height:100vh}
+header{position:sticky;top:0;z-index:50;background:rgba(8,8,10,.9);backdrop-filter:blur(12px);border-bottom:1px solid var(--line);padding:12px 16px;display:flex;align-items:center;justify-content:space-between}
+.logo{display:flex;align-items:center;gap:10px}
+.logo .box{width:36px;height:36px;background:var(--gold);color:#000;border-radius:8px;display:grid;place-items:center;font-weight:900}
+.status{display:flex;align-items:center;gap:8px;font-size:11px;letter-spacing:.15em}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--green);animation:pulse 1.5s infinite}
+@keyframes pulse{50%{opacity:.4}}
+main{max-width:1400px;margin:0 auto;padding:16px;display:grid;grid-template-columns:1fr 1fr 320px;gap:16px}
+@media(max-width:1000px){main{grid-template-columns:1fr}}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.card h3{padding:12px 16px;border-bottom:1px solid var(--line);font-size:11px;letter-spacing:.18em;display:flex;justify-content:space-between;align-items:center}
+.card .body{padding:12px 16px}
+.equity{font-size:32px;font-weight:800;color:var(--gold)}
+.sub{font-size:11px;color:var(--text-dim);margin-top:4px}
+.desks{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.desk{background:#000;border:1px solid var(--line);border-radius:10px;padding:8px;font-size:10px}
+.desk .name{font-weight:700;letter-spacing:.1em}
+.desk .bar{height:6px;background:#222;border-radius:3px;margin-top:6px;overflow:hidden}
+.desk .fill{height:100%;border-radius:3px;transition:width .6s}
+.log{max-height:480px;overflow:auto;font-size:10px;line-height:1.4}
+.log .row{padding:6px 8px;border-bottom:1px solid #1a1a1e;display:flex;gap:8px}
+.log .tag{font-weight:700;min-width:50px}
+.log .gold{color:var(--gold)}
+.log .green{color:var(--green)}
+.cmd{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+button{background:#000;border:1px solid var(--line);color:var(--text);border-radius:10px;padding:10px;font-size:11px;font-weight:700;letter-spacing:.06em;cursor:pointer}
+button:hover{border-color:var(--gold-border);color:var(--gold)}
+button.gold{background:var(--gold);color:#000;border-color:var(--gold)}
+.api-box{background:#000;border:1px solid var(--line);border-radius:8px;padding:8px;font-size:10px;margin-top:8px}
+input{width:100%;background:#000;border:1px solid var(--line);color:var(--text);padding:6px 8px;border-radius:6px;font-size:11px;margin-top:4px}
 </style>
 </head>
 <body>
-<div>
-<h1>Wolf Street Capital</h1>
-<p>Officeverse RC Ultimate</p>
-<p><a href="https://drive.google.com/file/d/1F3kXfzTaCMbWHgenRETA7riCmdx0SlM7/view" target="_blank">Apri dashboard completa</a></p>
-<p style="opacity:.6;font-size:12px">File completo su Google Drive</p>
-</div>
+<header>
+  <div class="logo">
+    <div class="box">W</div>
+    <div>
+      <div style="font-weight:800;font-size:13px;letter-spacing:-.02em">WOLF STREET CAPITAL</div>
+      <div style="font-size:10px;letter-spacing:.2em;color:var(--text-dim)">OFFICEVERSE • IMPERO LIVE</div>
+    </div>
+  </div>
+  <div class="status">
+    <span class="dot" id="dot"></span>
+    <span id="status">CONNECTING</span>
+  </div>
+</header>
+<main>
+  <section class="card">
+    <h3>EQUITY • LIVE <span id="ts" style="color:var(--text-dim);font-weight:400"></span></h3>
+    <div class="body">
+      <div class="equity" id="equity">—</div>
+      <div class="sub">Target 300€ • <span id="progress">—</span></div>
+      <div style="margin-top:12px;height:8px;background:#000;border-radius:4px;overflow:hidden;border:1px solid var(--line)">
+        <div id="bar" style="height:100%;width:0%;background:var(--gold);transition:width .5s"></div>
+      </div>
+      <div class="api-box">
+        <div style="color:var(--text-dim)">API URL</div>
+        <input id="apiUrl" value="https://xxxx.ngrok-free.app" placeholder="https://....ngrok-free.app">
+        <div style="color:var(--text-dim);margin-top:6px">TOKEN</div>
+        <input id="apiToken" type="password" value="cambia-questa-chiave" placeholder="IMPERO_API_TOKEN">
+        <button style="margin-top:8px;width:100%" onclick="connect()">CONNETTI</button>
+      </div>
+    </div>
+  </section>
+  <section class="card">
+    <h3>9 DESKS • ALLOCATION</h3>
+    <div class="body"><div class="desks" id="desks"></div></div>
+  </section>
+  <section class="card">
+    <h3>COMANDI</h3>
+    <div class="body">
+      <div class="cmd">
+        <button onclick="cmd('pausa')">⏸ PAUSA</button>
+        <button onclick="cmd('stop')" style="color:var(--red)">■ STOP</button>
+        <button onclick="cmd('turno')">▶ TURNO</button>
+        <button onclick="cmd('fix')">⚡ AUTO-FIX</button>
+        <button onclick="cmd('jarvis')">◉ JARVIS</button>
+        <button class="gold" onclick="cmd('gira')">↻ GIRA TUTTO</button>
+      </div>
+      <div class="sub" id="cmdOut" style="margin-top:10px">Pronto</div>
+    </div>
+  </section>
+  <section class="card" style="grid-column:1/-1">
+    <h3>LOG • DIARIO + SEGNALI <span id="counts" style="color:var(--text-dim)"></span></h3>
+    <div class="body"><div class="log" id="log"></div></div>
+  </section>
+</main>
+<script>
+const DESKS = [
+  {id:"mira",name:"MIRA",pair:"BTC/EUR",color:"#F2C94C"},
+  {id:"joon",name:"JOON",pair:"ETH/EUR",color:"#6C8CFF"},
+  {id:"sami",name:"SAMI",pair:"SOL/EUR",color:"#1AFF8C"},
+  {id:"aya",name:"AYA",pair:"ADA/EUR",color:"#FF7AE2"},
+  {id:"leo",name:"LEO",pair:"AVAX/EUR",color:"#FF4D6A"},
+  {id:"nova",name:"NOVA",pair:"LINK/EUR",color:"#8B7CFF"},
+  {id:"zen",name:"ZEN",pair:"XRP/EUR",color:"#4DE2FF"},
+  {id:"kai",name:"KAI",pair:"LTC/EUR",color:"#FFA64D"},
+  {id:"rex",name:"REX",pair:"DOT/EUR",color:"#B8FF4D"},
+];
+let apiBase = "", token = "";
+function connect(){
+  apiBase = document.getElementById("apiUrl").value.replace(/\/$/,"");
+  token = document.getElementById("apiToken").value;
+  localStorage.setItem("impero_url", apiBase);
+  localStorage.setItem("impero_token", token);
+  poll();
+}
+async function api(path){
+  const r = await fetch(apiBase + path, {headers:{"Authorization":"Bearer "+token}});
+  if(!r.ok) throw new Error(r.status);
+  return r.json();
+}
+async function poll(){
+  const dot = document.getElementById("dot");
+  const st = document.getElementById("status");
+  try{
+    const h = await api("/health");
+    st.textContent = "LIVE";
+    st.style.color = "var(--green)";
+    dot.style.background = "var(--green)";
+    document.getElementById("ts").textContent = new Date().toLocaleTimeString("it-IT");
+    document.getElementById("counts").textContent = `brent:${h.counts.brent} diary:${h.counts.diary} bal:${h.counts.balances}`;
+    const [balances, diary, brent] = await Promise.all([
+      api("/balances?limit=5").catch(()=>[]),
+      api("/diary?limit=30").catch(()=>[]),
+      api("/brent?limit=10").catch(()=>[]),
+    ]);
+    let equity = 214.01;
+    if(balances.length) equity = balances[0].amount || equity;
+    document.getElementById("equity").textContent = equity.toFixed(2) + "€";
+    const pct = Math.min(100, (equity/300)*100);
+    document.getElementById("progress").textContent = pct.toFixed(1) + "% → 300€";
+    document.getElementById("bar").style.width = pct + "%";
+    const desksEl = document.getElementById("desks");
+    desksEl.innerHTML = DESKS.map((d,i)=>{
+      const alloc = (equity * (0.4 - i*0.03)).toFixed(1);
+      const w = Math.min(100, (parseFloat(alloc)/equity)*100);
+      return `<div class="desk"><div class="name" style="color:${d.color}">${d.name}</div><div style="color:var(--text-dim)">${d.pair}</div><div class="bar"><div class="fill" style="width:${w}%;background:${d.color}"></div></div><div style="margin-top:4px">${alloc}€</div></div>`;
+    }).join("");
+    const logEl = document.getElementById("log");
+    const rows = [];
+    diary.forEach(d => rows.push({t:d.ts?.slice(11,19)||"", tag:d.event||"DIARY", msg:d.payload||"", cls:"gold"}));
+    brent.forEach(b => rows.push({t:b.ts?.slice(11,19)||"", tag:"BRENT", msg:`${b.signal} @ ${b.price} | ${b.reason||""}`, cls:"green"}));
+    if(!rows.length) rows.push({t:"--:--:--", tag:"SYS", msg:"Nessun dato ancora. Avvia i bot.", cls:""});
+    logEl.innerHTML = rows.slice(0,40).map(r=>`<div class="row"><span style="color:var(--text-faint)">${r.t}</span><span class="tag ${r.cls}">${r.tag}</span><span>${r.msg}</span></div>`).join("");
+  }catch(e){
+    st.textContent = "OFFLINE";
+    st.style.color = "var(--red)";
+    dot.style.background = "var(--red)";
+  }
+  setTimeout(poll, 5000);
+}
+function cmd(c){
+  document.getElementById("cmdOut").textContent = "Comando "+c+" inviato (locale)";
+  if(apiBase && token){
+    fetch(apiBase+"/diary",{
+      method:"POST",
+      headers:{"Authorization":"Bearer "+token,"Content-Type":"application/json"},
+      body:JSON.stringify({event:"cmd_"+c, payload:"from dashboard"})
+    }).catch(()=>{});
+  }
+}
+document.getElementById("apiUrl").value = localStorage.getItem("impero_url") || "https://xxxx.ngrok-free.app";
+document.getElementById("apiToken").value = localStorage.getItem("impero_token") || "cambia-questa-chiave";
+if(localStorage.getItem("impero_url")) connect();
+</script>
 </body>
 </html>
