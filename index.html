@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Wolf Office • IMPERO Live</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#08080a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Wolf Office">
+<style>
+:root{--bg:#08080a;--surface:#121214;--surface-2:#1a1a1e;--line:#2a2a2e;--gold:#f2c94c;--gold-dim:rgba(242,201,76,.12);--gold-border:rgba(242,201,76,.4);--green:#1aff8c;--green-dim:rgba(26,255,140,.15);--text:#f6f5f1;--text-dim:#9a9994;--red:#ff4d6a;--blue:#6c8cff}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{background:var(--bg);color:var(--text);font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;min-height:100vh;padding-bottom:20px}
+header{position:sticky;top:0;z-index:50;background:rgba(8,8,10,.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--line);padding:14px 16px;display:flex;align-items:center;justify-content:space-between}
+.logo{display:flex;align-items:center;gap:12px}
+.logo .box{width:40px;height:40px;background:var(--gold);color:#000;border-radius:10px;display:grid;place-items:center;font-weight:900;font-size:20px}
+.status{display:flex;align-items:center;gap:8px;font-size:11px;letter-spacing:.12em;font-weight:700}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--green);animation:pulse 1.8s infinite}
+@keyframes pulse{50%{opacity:.35}}
+main{max-width:1400px;margin:0 auto;padding:16px;display:grid;grid-template-columns:1fr 1fr 300px;gap:16px}
+@media(max-width:1100px){main{grid-template-columns:1fr}}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:18px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,.3)}
+.card h3{padding:14px 16px;border-bottom:1px solid var(--line);font-size:11px;letter-spacing:.2em;display:flex;justify-content:space-between;align-items:center;background:rgba(0,0,0,.2)}
+.card .body{padding:16px}
+.equity{font-size:36px;font-weight:800;color:var(--gold);letter-spacing:-.02em}
+.sub{font-size:12px;color:var(--text-dim);margin-top:6px}
+.desks{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+@media(max-width:500px){.desks{grid-template-columns:repeat(2,1fr)}}
+.desk{background:#000;border:1px solid var(--line);border-radius:12px;padding:10px;font-size:11px;transition:border-color .2s}
+.desk:hover{border-color:var(--gold-border)}
+.desk .name{font-weight:800;letter-spacing:.08em;font-size:12px}
+.desk .bar{height:7px;background:#222;border-radius:4px;margin-top:8px;overflow:hidden}
+.desk .fill{height:100%;border-radius:4px;transition:width .7s ease}
+.log{max-height:520px;overflow:auto;font-size:11px;line-height:1.5}
+.log .row{padding:8px 10px;border-bottom:1px solid #1a1a1e;display:flex;gap:10px;align-items:flex-start}
+.log .tag{font-weight:800;min-width:56px;font-size:10px}
+.log .gold{color:var(--gold)}
+.log .green{color:var(--green)}
+.log .blue{color:var(--blue)}
+.cmd{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+button{background:#000;border:1px solid var(--line);color:var(--text);border-radius:12px;padding:12px 10px;font-size:11px;font-weight:800;letter-spacing:.05em;cursor:pointer;transition:all .15s}
+button:hover,button:active{border-color:var(--gold-border);color:var(--gold);transform:translateY(-1px)}
+button.gold{background:var(--gold);color:#000;border-color:var(--gold)}
+button.gold:hover{filter:brightness(1.1)}
+.api-box{background:#000;border:1px solid var(--line);border-radius:10px;padding:12px;font-size:11px;margin-top:12px}
+input{width:100%;background:#000;border:1px solid var(--line);color:var(--text);padding:10px 12px;border-radius:8px;font-size:12px;margin-top:6px}
+input:focus{outline:none;border-color:var(--gold)}
+.install-btn{position:fixed;bottom:20px;right:20px;background:var(--gold);color:#000;border:none;border-radius:50px;padding:14px 22px;font-weight:800;font-size:13px;letter-spacing:.05em;box-shadow:0 8px 30px rgba(242,201,76,.4);z-index:100;display:none}
+.progress-bar{margin-top:14px;height:10px;background:#000;border-radius:6px;overflow:hidden;border:1px solid var(--line)}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--gold),#ffeaa7);transition:width .6s}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">
+    <div class="box">W</div>
+    <div>
+      <div style="font-weight:800;font-size:15px;letter-spacing:-.02em">WOLF STREET CAPITAL</div>
+      <div style="font-size:10px;letter-spacing:.22em;color:var(--text-dim);margin-top:2px">OFFICEVERSE • IMPERO LIVE</div>
+    </div>
+  </div>
+  <div class="status">
+    <span class="dot" id="dot"></span>
+    <span id="status">CONNECTING</span>
+  </div>
+</header>
+<main>
+  <section class="card">
+    <h3>EQUITY • LIVE <span id="ts" style="color:var(--text-dim);font-weight:400;font-size:10px"></span></h3>
+    <div class="body">
+      <div class="equity" id="equity">—</div>
+      <div class="sub">Target 300€ • <span id="progress">—</span></div>
+      <div class="progress-bar"><div class="progress-fill" id="bar" style="width:0%"></div></div>
+      <div class="api-box">
+        <div style="color:var(--text-dim);font-size:10px;letter-spacing:.1em">API URL</div>
+        <input id="apiUrl" value="" placeholder="https://....ngrok-free.app">
+        <div style="color:var(--text-dim);font-size:10px;letter-spacing:.1em;margin-top:8px">TOKEN</div>
+        <input id="apiToken" type="password" value="" placeholder="IMPERO_API_TOKEN">
+        <button style="margin-top:10px;width:100%" onclick="connect()">CONNETTI / AGGIORNA</button>
+      </div>
+    </div>
+  </section>
+  <section class="card">
+    <h3>9 DESKS • ALLOCATION</h3>
+    <div class="body"><div class="desks" id="desks"></div></div>
+  </section>
+  <section class="card">
+    <h3>COMANDI RAPIDI</h3>
+    <div class="body">
+      <div class="cmd">
+        <button onclick="cmd('pausa')">⏸ PAUSA</button>
+        <button onclick="cmd('stop')" style="color:var(--red)">■ STOP</button>
+        <button onclick="cmd('turno')">▶ TURNO</button>
+        <button onclick="cmd('fix')">⚡ AUTO-FIX</button>
+        <button onclick="cmd('jarvis')">◉ JARVIS</button>
+        <button class="gold" onclick="cmd('gira')">↻ GIRA TUTTO</button>
+      </div>
+      <div class="sub" id="cmdOut" style="margin-top:12px;min-height:20px">Pronto</div>
+    </div>
+  </section>
+  <section class="card" style="grid-column:1/-1">
+    <h3>LOG • DIARIO + SEGNALI <span id="counts" style="color:var(--text-dim);font-weight:400"></span></h3>
+    <div class="body"><div class="log" id="log"></div></div>
+  </section>
+</main>
+<button class="install-btn" id="installBtn" onclick="installApp()">INSTALLA APP</button>
+<script>
+const DESKS = [
+  {id:"mira",name:"MIRA",pair:"BTC/EUR",color:"#F2C94C"},
+  {id:"joon",name:"JOON",pair:"ETH/EUR",color:"#6C8CFF"},
+  {id:"sami",name:"SAMI",pair:"SOL/EUR",color:"#1AFF8C"},
+  {id:"aya",name:"AYA",pair:"ADA/EUR",color:"#FF7AE2"},
+  {id:"leo",name:"LEO",pair:"AVAX/EUR",color:"#FF4D6A"},
+  {id:"nova",name:"NOVA",pair:"LINK/EUR",color:"#8B7CFF"},
+  {id:"zen",name:"ZEN",pair:"XRP/EUR",color:"#4DE2FF"},
+  {id:"kai",name:"KAI",pair:"LTC/EUR",color:"#FFA64D"},
+  {id:"rex",name:"REX",pair:"DOT/EUR",color:"#B8FF4D"},
+];
+let apiBase = "", token = "", deferredPrompt = null;
+
+function connect(){
+  apiBase = document.getElementById("apiUrl").value.replace(/\/$/,"");
+  token = document.getElementById("apiToken").value;
+  localStorage.setItem("impero_url", apiBase);
+  localStorage.setItem("impero_token", token);
+  poll();
+}
+async function api(path){
+  const r = await fetch(apiBase + path, {headers:{"Authorization":"Bearer "+token}});
+  if(!r.ok) throw new Error(r.status);
+  return r.json();
+}
+function mockData(){
+  const equity = 214.01 + Math.random()*20;
+  return {
+    health: {counts:{brent:12, diary:48, balances:1}},
+    balances:[{amount:equity}],
+    diary:[
+      {ts:new Date().toISOString(), event:"DIARY", payload:"Sistema online • mock mode"},
+      {ts:new Date(Date.now()-60000).toISOString(), event:"CMD", payload:"Gira tutto eseguito"},
+    ],
+    brent:[
+      {ts:new Date().toISOString(), signal:"HOLD", price:82.45, reason:"in attesa setup"},
+      {ts:new Date(Date.now()-120000).toISOString(), signal:"BUY", price:81.90, reason:"EMA cross"},
+    ]
+  };
+}
+async function poll(){
+  const dot = document.getElementById("dot");
+  const st = document.getElementById("status");
+  let data;
+  try{
+    if(apiBase && token){
+      const h = await api("/health");
+      st.textContent = "LIVE";
+      st.style.color = "var(--green)";
+      dot.style.background = "var(--green)";
+      document.getElementById("counts").textContent = `brent:${h.counts?.brent||0} diary:${h.counts?.diary||0}`;
+      const [balances, diary, brent] = await Promise.all([
+        api("/balances?limit=5").catch(()=>[]),
+        api("/diary?limit=30").catch(()=>[]),
+        api("/brent?limit=10").catch(()=>[]),
+      ]);
+      data = {health:h, balances, diary, brent};
+    } else throw new Error("no config");
+  }catch(e){
+    st.textContent = apiBase ? "OFFLINE" : "MOCK";
+    st.style.color = apiBase ? "var(--red)" : "var(--gold)";
+    dot.style.background = apiBase ? "var(--red)" : "var(--gold)";
+    data = mockData();
+  }
+  document.getElementById("ts").textContent = new Date().toLocaleTimeString("it-IT");
+  let equity = data.balances?.[0]?.amount || 214.01;
+  document.getElementById("equity").textContent = equity.toFixed(2) + "€";
+  const pct = Math.min(100, (equity/300)*100);
+  document.getElementById("progress").textContent = pct.toFixed(1) + "% → 300€";
+  document.getElementById("bar").style.width = pct + "%";
+  const desksEl = document.getElementById("desks");
+  desksEl.innerHTML = DESKS.map((d,i)=>{
+    const alloc = (equity * (0.38 - i*0.025)).toFixed(1);
+    const w = Math.min(100, (parseFloat(alloc)/equity)*100);
+    return `<div class="desk"><div class="name" style="color:${d.color}">${d.name}</div><div style="color:var(--text-dim);margin:2px 0 4px">${d.pair}</div><div class="bar"><div class="fill" style="width:${w}%;background:${d.color}"></div></div><div style="margin-top:6px;font-weight:700">${alloc}€</div></div>`;
+  }).join("");
+  const logEl = document.getElementById("log");
+  const rows = [];
+  (data.diary||[]).forEach(d => rows.push({t:(d.ts||"").slice(11,19), tag:d.event||"DIARY", msg:d.payload||"", cls:"gold"}));
+  (data.brent||[]).forEach(b => rows.push({t:(b.ts||"").slice(11,19), tag:"BRENT", msg:`${b.signal} @ ${b.price} | ${b.reason||""}`, cls:"green"}));
+  if(!rows.length) rows.push({t:"--:--:--", tag:"SYS", msg:"Nessun dato. Configura API o resta in mock.", cls:"blue"});
+  logEl.innerHTML = rows.slice(0,50).map(r=>`<div class="row"><span style="color:#555;min-width:62px">${r.t}</span><span class="tag ${r.cls}">${r.tag}</span><span>${r.msg}</span></div>`).join("");
+  setTimeout(poll, 5000);
+}
+function cmd(c){
+  document.getElementById("cmdOut").textContent = "Comando "+c+" inviato";
+  if(apiBase && token){
+    fetch(apiBase+"/diary",{
+      method:"POST",
+      headers:{"Authorization":"Bearer "+token,"Content-Type":"application/json"},
+      body:JSON.stringify({event:"cmd_"+c, payload:"from dashboard app"})
+    }).catch(()=>{});
+  }
+}
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  document.getElementById('installBtn').style.display = 'block';
+});
+async function installApp(){
+  if(!deferredPrompt) return;
+  deferredPrompt.prompt();
+  const {outcome} = await deferredPrompt.userChoice;
+  deferredPrompt = null;
+  document.getElementById('installBtn').style.display = 'none';
+}
+document.getElementById("apiUrl").value = localStorage.getItem("impero_url") || "";
+document.getElementById("apiToken").value = localStorage.getItem("impero_token") || "";
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('sw.js').catch(()=>{});
+}
+poll();
+</script>
+</body>
+</html>
