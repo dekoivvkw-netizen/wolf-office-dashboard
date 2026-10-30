@@ -50,6 +50,7 @@ input:focus{outline:none;border-color:var(--gold)}
 .install-btn{position:fixed;bottom:20px;right:20px;background:var(--gold);color:#000;border:none;border-radius:50px;padding:14px 22px;font-weight:800;font-size:13px;letter-spacing:.05em;box-shadow:0 8px 30px rgba(242,201,76,.4);z-index:100;display:none}
 .progress-bar{margin-top:14px;height:10px;background:#000;border-radius:6px;overflow:hidden;border:1px solid var(--line)}
 .progress-fill{height:100%;background:linear-gradient(90deg,var(--gold),#ffeaa7);transition:width .6s}
+.note{font-size:10px;color:var(--text-dim);margin-top:8px;line-height:1.4}
 </style>
 </head>
 <body>
@@ -58,7 +59,7 @@ input:focus{outline:none;border-color:var(--gold)}
     <div class="box">W</div>
     <div>
       <div style="font-weight:800;font-size:15px;letter-spacing:-.02em">WOLF STREET CAPITAL</div>
-      <div style="font-size:10px;letter-spacing:.22em;color:var(--text-dim);margin-top:2px">OFFICEVERSE • IMPERO LIVE</div>
+      <div style="font-size:10px;letter-spacing:.22em;color:var(--text-dim);margin-top:2px">OFFICEVERSE • IMPERO + REVOLUT X</div>
     </div>
   </div>
   <div class="status">
@@ -74,11 +75,12 @@ input:focus{outline:none;border-color:var(--gold)}
       <div class="sub">Target 300€ • <span id="progress">—</span></div>
       <div class="progress-bar"><div class="progress-fill" id="bar" style="width:0%"></div></div>
       <div class="api-box">
-        <div style="color:var(--text-dim);font-size:10px;letter-spacing:.1em">API URL</div>
-        <input id="apiUrl" value="" placeholder="https://....ngrok-free.app">
+        <div style="color:var(--text-dim);font-size:10px;letter-spacing:.1em">API URL (IMPERO / Revolut X backend)</div>
+        <input id="apiUrl" value="" placeholder="https://xxxx.ngrok-free.app">
         <div style="color:var(--text-dim);font-size:10px;letter-spacing:.1em;margin-top:8px">TOKEN</div>
         <input id="apiToken" type="password" value="" placeholder="IMPERO_API_TOKEN">
-        <button style="margin-top:10px;width:100%" onclick="connect()">CONNETTI / AGGIORNA</button>
+        <button style="margin-top:10px;width:100%" onclick="connect()">CONNETTI A REVOLUT X</button>
+        <div class="note">Il backend (bot cfd reale / IMPERO) espone i saldi e i segnali di Revolut X. Metti l'URL ngrok quando il server è attivo.</div>
       </div>
     </div>
   </section>
@@ -138,7 +140,7 @@ function mockData(){
     health: {counts:{brent:12, diary:48, balances:1}},
     balances:[{amount:equity}],
     diary:[
-      {ts:new Date().toISOString(), event:"DIARY", payload:"Sistema online • mock mode"},
+      {ts:new Date().toISOString(), event:"DIARY", payload:"Sistema online • mock mode (collega API Revolut X per dati reali)"},
       {ts:new Date(Date.now()-60000).toISOString(), event:"CMD", payload:"Gira tutto eseguito"},
     ],
     brent:[
@@ -154,7 +156,7 @@ async function poll(){
   try{
     if(apiBase && token){
       const h = await api("/health");
-      st.textContent = "LIVE";
+      st.textContent = "LIVE REVOLUT X";
       st.style.color = "var(--green)";
       dot.style.background = "var(--green)";
       document.getElementById("counts").textContent = `brent:${h.counts?.brent||0} diary:${h.counts?.diary||0}`;
@@ -187,7 +189,7 @@ async function poll(){
   const rows = [];
   (data.diary||[]).forEach(d => rows.push({t:(d.ts||"").slice(11,19), tag:d.event||"DIARY", msg:d.payload||"", cls:"gold"}));
   (data.brent||[]).forEach(b => rows.push({t:(b.ts||"").slice(11,19), tag:"BRENT", msg:`${b.signal} @ ${b.price} | ${b.reason||""}`, cls:"green"}));
-  if(!rows.length) rows.push({t:"--:--:--", tag:"SYS", msg:"Nessun dato. Configura API o resta in mock.", cls:"blue"});
+  if(!rows.length) rows.push({t:"--:--:--", tag:"SYS", msg:"Nessun dato. Configura API Revolut X o resta in mock.", cls:"blue"});
   logEl.innerHTML = rows.slice(0,50).map(r=>`<div class="row"><span style="color:#555;min-width:62px">${r.t}</span><span class="tag ${r.cls}">${r.tag}</span><span>${r.msg}</span></div>`).join("");
   setTimeout(poll, 5000);
 }
